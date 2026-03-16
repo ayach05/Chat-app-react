@@ -15,7 +15,7 @@ import "./App.css";
 
 function App() {
     const [username, setUsername] = useState("");
-    const [room, setRoom]         = useState("");
+    const [room, setRoom] = useState("");
     const [connected, setConnected] = useState(false);
 
     return (
@@ -29,7 +29,11 @@ function App() {
                     setConnected={setConnected}
                 />
             ) : (
-                <Chat username={username} room={room} />
+                <Chat
+                    username={username}
+                    room={room}
+                    setConnected={setConnected}
+                />
             )}
         </div>
     );

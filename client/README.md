@@ -68,3 +68,15 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Questions pour l'examen
+# Q1
+### Q1 :  App.js. Il détermine s’il faut afficher le chat ou la page de connexion (Rejoindre). L’ interface de chat se trouve dans le fichier 
+# Chat.js. Elle permet d’ afficher et de transmettre les messages dans l’ espace.
+# Message.js sert à afficher chaque message du chat , ainsi que le nom de l’utilisateur et l’ heure.
+# Sidebar.js : la barre latérale affiche lesutilisateurs connectés dans la salle , ainsi que l’historique des activités récentes .
+# Join.js est la page où l’ utilisateur saisit son pseudonyme et sélectionne la salle qu’il souhaite rejoindre . server.js est le serveur 
+# Node.js. Il gère les connexions, les salles et les échanges de messages avec Socket.io.
+# Le fichier SocketContext.js permet la création et le partage de la connexion Socket.io dans tout le programme.
+# Q2 Communication entre le front-end et le back-end Le socket est partagé au sein de l' application et créé dans SocketContext.js.Lorsque l'utilisateur retourne dans une salle, le client envoie join_room. Le message est envoyé, le client utilise la fonction send_message, et le serveur le distribue aux utilisateurs de la salle .
+

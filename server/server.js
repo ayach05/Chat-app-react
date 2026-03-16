@@ -12,7 +12,6 @@ app.use(express.json());
 const server = http.createServer(app);
 
 // ─── Socket.io ──────────────────────────────
-// CORS: autoriser localhost, Vercel et CLIENT_URL (si defini)
 const allowedOrigins = new Set(
     (process.env.CLIENT_URL || "")
         .split(",")
@@ -33,13 +32,11 @@ const io = new Server(server, {
     },
 });
 
-
-
 // ─── Rooms prédéfinies ───────────────────────
 const rooms = {
     "Generale":  { users: [] },
     "Codding":   { users: [] },
-    "Support":    { users: [] },
+    "Support":   { users: [] },
     "Entraide":  { users: [] },
 };
 
@@ -54,9 +51,8 @@ app.get("/rooms", (req, res) => {
 
 // ─── Socket.io events ────────────────────────
 io.on("connection", (socket) => {
-    console.log(`✅ Connecté : ${socket.id}`);
+    console.log(`Connecté : ${socket.id}`);
 
-    // Envoyer la liste des rooms dès la connexion
     socket.emit("rooms_list", getRoomsList());
 
     // ── Rejoindre une room ──────────────────
@@ -71,13 +67,21 @@ io.on("connection", (socket) => {
             rooms[room].users.push({ socketId: socket.id, username });
         }
 
-        console.log(`👤 ${username} → room "${room}" (${rooms[room].users.length} participants)`);
+        console.log(`${username} -> room "${room}" (${rooms[room].users.length} participants)`);
 
         io.to(room).emit("receive_message", {
             author: "Système",
-            message: `${username} a rejoint la room 💬`,
+            message: `${username} a rejoint la room`,
             time: now(),
             system: true,
+        });
+
+        // Ajout demandé par le prof : activité récente
+        io.emit("activity_log", {
+            username,
+            action: "a rejoint",
+            room,
+            time: now(),
         });
 
         io.to(room).emit("room_users", rooms[room].users);
@@ -89,14 +93,45 @@ io.on("connection", (socket) => {
         const name = roomName.trim();
         if (!name || rooms[name]) return;
         rooms[name] = { users: [] };
-        console.log(`🆕 Room créée : "${name}"`);
+        console.log(`Room créée : "${name}"`);
         io.emit("rooms_list", getRoomsList());
     });
 
     // ── Envoyer un message ──────────────────
     socket.on("send_message", (data) => {
-        console.log(`💬 "${data.author}" → "${data.room}": ${data.message}`);
+        console.log(`"${data.author}" -> "${data.room}": ${data.message}`);
         io.to(data.room).emit("receive_message", data);
+    });
+
+    // ── Quitter une room pour la question 4 ───────────────
+    socket.on("leave_room", ({ username, room }) => {
+        socket.leave(room);
+
+        if (!rooms[room]) return;
+
+        rooms[room].users = rooms[room].users.filter(
+            (u) => u.socketId !== socket.id
+        );
+
+        console.log(`${username} a quitté "${room}"`);
+
+        io.to(room).emit("receive_message", {
+            author: "Système",
+            message: `${username} a quitté la room`,
+            time: now(),
+            system: true,
+        });
+
+        // Ajout demandé par le prof : activité récente
+        io.emit("activity_log", {
+            username,
+            action: "a quitté",
+            room,
+            time: now(),
+        });
+
+        io.to(room).emit("room_users", rooms[room].users);
+        io.emit("rooms_list", getRoomsList());
     });
 
     // ── Déconnexion ─────────────────────────
@@ -106,14 +141,23 @@ io.on("connection", (socket) => {
         if (!room || !rooms[room]) return;
 
         rooms[room].users = rooms[room].users.filter(u => u.socketId !== socket.id);
-        console.log(`❌ ${username} a quitté "${room}"`);
+        console.log(`${username} a quitté "${room}"`);
 
         io.to(room).emit("receive_message", {
             author: "Système",
-            message: `${username} a quitté la room 👋`,
+            message: `${username} a quitté la room`,
             time: now(),
             system: true,
         });
+
+        // Ajout demandé par le prof : activité récente
+        io.emit("activity_log", {
+            username,
+            action: "a quitté",
+            room,
+            time: now(),
+        });
+
         io.to(room).emit("room_users", rooms[room].users);
         io.emit("rooms_list", getRoomsList());
     });
@@ -121,7 +165,10 @@ io.on("connection", (socket) => {
 
 // ─── Helpers ───────────────────────────────
 function now() {
-    return new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    return new Date().toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 }
 
 function getRoomsList() {
@@ -145,4 +192,4 @@ function getLocalIP() {
 // ─── Démarrage serveur ────────────────────
 const PORT = process.env.PORT || 5000;
 const localIP = getLocalIP();
-server.listen(PORT, () => console.log(`🚀 Serveur sur http://${localIP}:${PORT}`));
+server.listen(PORT, () => console.log(`Serveur sur http://${localIP}:${PORT}`));

@@ -8,7 +8,7 @@ import { useSocket } from "../context/SocketContext";
 import Message from "./Message";
 import Sidebar from "./Sidebar";
 
-function Chat({ username, room }) {
+function Chat({ username, room, setConnected }) {
     // 🔹 Récupération du socket via le Context
     const socket = useSocket();
     // 🔹 État local : liste des messages et contenu du champ de saisie
@@ -81,6 +81,18 @@ function Chat({ username, room }) {
         }
     };
 
+    // ----------------------------------------------------------
+    // Quitter la salle
+    // ----------------------------------------------------------
+    const leaveRoom = () => {
+        socket.emit("leave_room", {
+            username,
+            room,
+        });
+
+        setConnected(false);
+    };
+
     return (
         <div className="chatWrapper">
             {/* ---- SIDEBAR (liste des utilisateurs) ---- */}
@@ -112,6 +124,14 @@ function Chat({ username, room }) {
                             <p>{users.length} participant{users.length > 1 ? "s" : ""}</p>
                         </div>
                     </div>
+
+                    <button
+                        className="leaveRoomBtn"
+                        onClick={leaveRoom}
+                        title="Quitter la salle"
+                    >
+                        Quitter la salle
+                    </button>
                 </div>
 
                 {/* Zone des messages */}

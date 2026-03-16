@@ -605,3 +605,42 @@ body {
     font-size: 13px;
     padding: 16px 0;
 }
+/* ============================================================
+   AJOUTS EXAMEN : Q3, Q4, Q5
+   ============================================================ */
+
+/* Q3 — Indicateur Lu */
+.messageRead {
+    font-size: 11px;
+    color: var(--wa-dark-green);
+    float: right;
+    margin-left: 6px;
+    margin-top: 2px;
+    font-weight: 600;
+}
+
+/* Q4 — Bouton Quitter la salle */
+.leaveRoomBtn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.leaveRoomBtn:hover {
+    background: #b02a37;
+}
+
+/* Q5 — Activité récente */
+.activityItem {
+    font-size: 13px;
+    color: #d1d7db;
+    padding: 6px 0;
+    border-bottom: 1px solid #2a3942;
+    line-height: 1.4;
+}
